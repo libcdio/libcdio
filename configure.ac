@@ -539,6 +539,11 @@ AC_SUBST(HAVE_SOLARIS_CDROM)
 AC_SUBST(HAVE_WIN32_CDROM)
 AC_SUBST(HAVE_OS2_CDROM)
 
+LIBCDIO_SOURCE_PATH="`pwd`"
+AC_DEFINE_UNQUOTED(LIBCDIO_SOURCE_PATH, "$LIBCDIO_SOURCE_PATH",
+	[Full path to libcdio top_sourcedir.])
+AC_SUBST(LIBCDIO_SOURCE_PATH)
+
 AC_CHECK_FUNCS( [chdir drand48 fseeko fseeko64 ftruncate geteuid getgid \
 		 getuid getpwuid gettimeofday lseek64 lstat memcpy memset mkstemp rand \
 		 seteuid setegid snprintf setenv strndup unsetenv tzset sleep \

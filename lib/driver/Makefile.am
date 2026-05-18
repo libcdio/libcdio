@@ -104,7 +104,8 @@ libcdio_sources = \
 	util.c
 
 lib_LTLIBRARIES    = libcdio.la
-libcdio_la_LIBADD  = $(LTLIBICONV)
+libcdio_la_LIBADD  = $(LTLIBICONV) $(LIBCDIO_RUST_LIB)
+libcdio_la_DEPENDENCIES = $(LIBCDIO_RUST_LIB)
 
 libcdio_la_SOURCES = $(libcdio_sources)
 libcdio_la_ldflags = -version-info $(libcdio_la_CURRENT):$(libcdio_la_REVISION):$(libcdio_la_AGE) @LT_NO_UNDEFINED@ $(DARWIN_PKG_LIB_HACK)
@@ -172,7 +173,7 @@ AM_CPPFLAGS = $(LIBCDIO_CFLAGS)
 libcdio_la_MAJOR = $(shell expr $(libcdio_la_CURRENT) - $(libcdio_la_AGE))
 if BUILD_VERSIONED_LIBS
 libcdio_la_LDFLAGS = $(libcdio_la_ldflags) -Wl,--version-script=libcdio.la.ver
-libcdio_la_DEPENDENCIES = libcdio.la.ver
+libcdio_la_DEPENDENCIES += libcdio.la.ver
 
 libcdio.la.ver: $(srcdir)/libcdio.sym
 	@echo 'CDIO_$(libcdio_la_MAJOR) { ' > $@

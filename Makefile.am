@@ -51,7 +51,7 @@ EXTRA_DIST = \
 	$(wildcard test/data/*.iso) \
 	$(wildcard test/*.right)
 
-SUBDIRS = doc include lib src test example
+SUBDIRS = rust doc include lib src test example
 
 # pkg-config(1) related rules
 pkgconfigdir = $(libdir)/pkgconfig

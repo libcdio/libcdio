@@ -89,6 +89,32 @@ AM_CONDITIONAL(BUILD_EXAMPLES, test "x$enable_example_progs" != "xno")
 dnl We use C
 AC_PROG_CC
 
+dnl Check for rust tooling
+AC_PATH_PROG(CARGO, cargo, no)
+if test "x$CARGO" = "xno"; then
+  AC_MSG_ERROR([could not find cargo, please install the rust build tools: https://rust-lang.org/tools/install/])
+fi
+
+dnl Specify --enable-rust-debug to build Rust code with debugging information and without optimizations.
+dnl This is disabled by default.
+AC_ARG_ENABLE(rust-debug,
+              AS_HELP_STRING([--enable-rust-debug], [build rust code with debug info and without optimizations (default disabled)]),
+              [enable_rust_debug=yes],
+              [enable_rust_debug=no])
+AC_MSG_CHECKING(whether to perform debug build for rust)
+if test "x$enable_rust_debug" = "xyes"; then
+  AC_MSG_RESULT(yes)
+  LIBCDIO_RUST_LIB='$(top_builddir)/rust/target/debug/libcdio_rust.a'
+else
+  AC_MSG_RESULT(no)
+  LIBCDIO_RUST_LIB='$(top_builddir)/rust/target/release/libcdio_rust.a'
+fi
+dnl To set build args for cargo
+AM_CONDITIONAL([RUST_DEBUG], [test "x$enable_rust_debug" = "xyes"])
+dnl Cargo outputs the build to different subdirectories based on
+dnl the build profile used (i.e debug build)
+AC_SUBST(LIBCDIO_RUST_LIB)
+
 if test "x$enable_cxx" != "xno" ; then
   AC_PROG_CXX
 else
@@ -719,6 +745,7 @@ AC_CONFIG_FILES([
        lib/driver/Makefile \
        lib/iso9660/Makefile \
        lib/udf/Makefile \
+       rust/Makefile \
        libcdio.pc \
        libiso9660.pc \
        libudf.pc \

@@ -1,5 +1,6 @@
 EXTRA_DIST = Cargo.lock \
 	Cargo.toml \
+	build.rs \
 	src/lib.rs
 
 if RUST_DEBUG

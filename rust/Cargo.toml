@@ -7,3 +7,6 @@ edition = "2024"
 crate-type = ["staticlib"]
 
 [dependencies]
+
+[build-dependencies]
+bindgen = "0.72.1"

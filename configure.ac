@@ -115,6 +115,10 @@ dnl Cargo outputs the build to different subdirectories based on
 dnl the build profile used (i.e debug build)
 AC_SUBST(LIBCDIO_RUST_LIB)
 
+dnl libclang is required by rust's bindgen
+AC_CHECK_LIB([clang], [clang_getCString], [],
+  [AC_MSG_ERROR(libclang is required by rust bindgen: https://rust-lang.github.io/rust-bindgen/requirements.html)])
+
 if test "x$enable_cxx" != "xno" ; then
   AC_PROG_CXX
 else

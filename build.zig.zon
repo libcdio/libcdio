@@ -2,7 +2,7 @@
     .name = .libcdio,
     .fingerprint = 0x120c1466994fc42c,
     .version = "2.3.0",
-    .minimum_zig_version = "0.15.0",
+    .minimum_zig_version = "0.16.0",
     .dependencies = .{},
     .paths = .{
         "build.zig",

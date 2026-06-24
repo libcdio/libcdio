@@ -117,6 +117,12 @@ FILE* fopen_utf8(const char* filename, const char* mode)
 
 #ifdef HAVE_ICONV
 #include <iconv.h>
+#if defined(__ANDROID__) && __ANDROID_API__ < 28
+iconv_t iconv_open(const char *dst_encoding, const char *src_encoding);
+size_t iconv(iconv_t converter, char **inbuf, size_t *inbytesleft,
+             char **outbuf, size_t *outbytesleft);
+int iconv_close(iconv_t converter);
+#endif
 struct cdio_charset_coverter_s
   {
   iconv_t ic;

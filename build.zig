@@ -1,6 +1,11 @@
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
+    const android_libc_file = b.option(
+        std.Build.LazyPath,
+        "android-libc-file",
+        "Path to a generated Android libc metadata file",
+    );
 
     const lib_mod = b.createModule(.{
         .target = target,
@@ -16,6 +21,12 @@ pub fn build(b: *std.Build) void {
     lib_mod.addIncludePath(b.path("lib/driver"));
 
     lib_mod.addCSourceFiles(.{ .files = &common_sources });
+
+    if (target.result.abi.isAndroid()) {
+        lib_mod.addCSourceFiles(.{ .files = &.{
+            "lib/driver/android_compat.c",
+        } });
+    }
 
     // device.c's CdIo_all_drivers table references every platform driver.
     // Each driver file compiles cross-platform: the OS-specific code is inside
@@ -52,6 +63,10 @@ pub fn build(b: *std.Build) void {
         .name = "cdio",
         .root_module = lib_mod,
     });
+    if (target.result.abi.isAndroid()) {
+        if (android_libc_file) |libc_file|
+            lib.setLibCFile(libc_file);
+    }
 
     lib.installHeadersDirectory(b.path("include"), "", .{});
     lib.installHeadersDirectory(b.path("zig-config/cdio"), "cdio", .{});

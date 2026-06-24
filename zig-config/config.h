@@ -87,6 +87,26 @@
 #  define HAVE_TIMEGM 1
 #  define HAVE_UNSETENV 1
 #  define HAVE_UNISTD_H 1
+#elif defined(__ANDROID__)
+/* Android's NDK exposes glob/iconv entry points only from API 28. Keep the
+   image drivers usable for lower minSdk builds by avoiding glob-backed device
+   enumeration and using the Zig build's local iconv compatibility symbols. */
+#  define HAVE_ICONV 1
+#  define HAVE_DLFCN_H 1
+#  define HAVE_GMTIME_R 1
+#  define HAVE_LOCALTIME_R 1
+#  define HAVE_SETENV 1
+#  define HAVE_STRINGS_H 1
+#  define HAVE_SYS_STAT_H 1
+#  define HAVE_SYS_TYPES_H 1
+#  define HAVE_TM_GMTOFF 1
+#  define HAVE_TIMEGM 1
+#  define HAVE_TZSET 1
+#  define HAVE_TZNAME 1
+#  define HAVE_UNSETENV 1
+#  define HAVE_UNISTD_H 1
+#  define _FILE_OFFSET_BITS 64
+#  define _LARGE_FILES 1
 #else
 /* Linux and other POSIX */
 #  define HAVE_ICONV 1

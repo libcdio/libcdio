@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011, 2014, 2017 Rocky Bernstein <rocky@gnu.org>
+  Copyright (C) 2011, 2014, 2017, 2026 Rocky Bernstein <rocky@gnu.org>
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
@@ -194,20 +194,27 @@ print_mmc_drive_level(CdIo_t *p_cdio)
 {
   cdio_mmc_level_t mmc_level = mmc_get_drive_mmc_cap(p_cdio);
 
-  printf( "CD-ROM drive supports " );
+  printf( "SCSI INQUIRY command reports that the drive supports " );
 
   switch(mmc_level) {
   case CDIO_MMC_LEVEL_WEIRD:
     printf("some nonstandard or degenerate set of MMC\n");
     break;
   case CDIO_MMC_LEVEL_1:
-    printf("MMC 1\n");
+  case CDIO_MMC_LEVEL_1a:
+    printf("MMC-1 (CD)\n");
     break;
   case CDIO_MMC_LEVEL_2:
-    printf("MMC 2\n");
+    printf("MMC-2 (DVD)\n");
     break;
   case CDIO_MMC_LEVEL_3:
-    printf("MMC 3\n");
+    printf("SPC-3 / MMC-3 to MMC-5\n");
+    break;
+  case CDIO_MMC_LEVEL_45:
+    printf("SPC-4 / MMC-5\n");
+    break;
+  case CDIO_MMC_LEVEL_5:
+    printf("SPC-5 / MMC-5/6 (CD/DVD/BD)");
     break;
   case CDIO_MMC_LEVEL_NONE:
     printf("no MMC\n");

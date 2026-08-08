@@ -615,14 +615,6 @@ driver_return_code_t mmc_audio_get_volume (CdIo_t *p_cdio,  /*out*/
   discmode_t mmc_get_discmode( const CdIo_t *p_cdio );
 
 
-  typedef enum {
-    CDIO_MMC_LEVEL_WEIRD,
-    CDIO_MMC_LEVEL_1,
-    CDIO_MMC_LEVEL_2,
-    CDIO_MMC_LEVEL_3,
-    CDIO_MMC_LEVEL_NONE
-  } cdio_mmc_level_t;
-
   /**
     Get the MMC level supported by the device.
     @param p_cdio the CD object to be acted upon.

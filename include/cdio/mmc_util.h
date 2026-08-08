@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2010, 2012 Rocky Bernstein <rocky@gnu.org>
+    Copyright (C) 2010, 2012, 2026 Rocky Bernstein <rocky@gnu.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
 */
 
 /**
-   \file mmc_util.h 
-   
+   \file mmc_util.h
+
    \brief Multimedia Command (MMC) "helper" routines that don't depend
    on anything other than headers.
 */
@@ -31,12 +31,25 @@
 extern "C" {
 #endif /* __cplusplus */
 
+  /* MMC Version to SCSI/SPC Mapping. This is used in the INQUIRY command.
+   */
+  typedef enum {
+    CDIO_MMC_LEVEL_WEIRD,
+    CDIO_MMC_LEVEL_1 = 0x2, /* SCSI-2 */
+    CDIO_MMC_LEVEL_1a = 0x3, /* SPC-1 / ANSI X3.301-1997 */
+    CDIO_MMC_LEVEL_2 = 0x4, /* SPC-2 / ANSI INCITS 351-200 */
+    CDIO_MMC_LEVEL_3 = 0x5, /* SPC-3 / ANSI INCITS 408-2005 */
+    CDIO_MMC_LEVEL_45 = 0x6, /* SPC-4/5 */
+    CDIO_MMC_LEVEL_5 = 0x7, /* SPC-5 / MMC-5/6 */
+    CDIO_MMC_LEVEL_NONE
+  } cdio_mmc_level_t;
+
     /**
        Profile profile codes used in GET_CONFIGURATION - PROFILE LIST. */
     typedef enum {
         CDIO_MMC_FEATURE_PROF_NON_REMOVABLE = 0x0001, /**< Re-writable disc, capable
                                                          of changing behavior */
-        CDIO_MMC_FEATURE_PROF_REMOVABLE     = 0x0002, /**< disk Re-writable; with 
+        CDIO_MMC_FEATURE_PROF_REMOVABLE     = 0x0002, /**< disk Re-writable; with
                                                          removable  media */
         CDIO_MMC_FEATURE_PROF_MO_ERASABLE   = 0x0003, /**< Erasable Magneto-Optical
                                                          disk with sector erase
@@ -51,7 +64,7 @@ extern "C" {
                                                          capable */
         CDIO_MMC_FEATURE_PROF_CD_RW         = 0x000A, /**< CD-RW Re-writable
                                                          Compact Disc capable */
-        
+
         CDIO_MMC_FEATURE_PROF_DVD_ROM       = 0x0010, /**< Read only DVD */
         CDIO_MMC_FEATURE_PROF_DVD_R_SEQ     = 0x0011, /**< Re-recordable DVD using
                                                          Sequential recording */
@@ -62,7 +75,7 @@ extern "C" {
                                                          Sequential recording */
         CDIO_MMC_FEATURE_PROF_DVD_R_DL_SEQ  = 0x0015, /**< DVD-R/DL sequential
                                                          recording */
-        CDIO_MMC_FEATURE_PROF_DVD_R_DL_JR   = 0x0016, /**< DVD-R/DL layer jump 
+        CDIO_MMC_FEATURE_PROF_DVD_R_DL_JR   = 0x0016, /**< DVD-R/DL layer jump
                                                          recording */
         CDIO_MMC_FEATURE_PROF_DVD_PRW       = 0x001A, /**< DVD+RW - DVD ReWritable */
         CDIO_MMC_FEATURE_PROF_DVD_PR        = 0x001B, /**< DVD+R - DVD Recordable */
@@ -70,29 +83,29 @@ extern "C" {
         CDIO_MMC_FEATURE_PROF_DDCD_R        = 0x0021, /**< DDCD-R Write only DDCD */
         CDIO_MMC_FEATURE_PROF_DDCD_RW       = 0x0022, /**< Re-Write only DDCD */
         CDIO_MMC_FEATURE_PROF_DVD_PRW_DL    = 0x002A, /**< "DVD+RW/DL */
-        CDIO_MMC_FEATURE_PROF_DVD_PR_DL     = 0x002B, /**< DVD+R - DVD Recordable 
+        CDIO_MMC_FEATURE_PROF_DVD_PR_DL     = 0x002B, /**< DVD+R - DVD Recordable
                                                          double layer */
-        
+
         CDIO_MMC_FEATURE_PROF_BD_ROM        = 0x0040, /**< BD-ROM */
-        CDIO_MMC_FEATURE_PROF_BD_SEQ        = 0x0041, /**< BD-R sequential 
+        CDIO_MMC_FEATURE_PROF_BD_SEQ        = 0x0041, /**< BD-R sequential
                                                          recording */
         CDIO_MMC_FEATURE_PROF_BD_R_RANDOM   = 0x0042, /**< BD-R random recording */
         CDIO_MMC_FEATURE_PROF_BD_RE         = 0x0043, /**< BD-RE */
-        
+
         CDIO_MMC_FEATURE_PROF_HD_DVD_ROM    = 0x0050, /**< HD-DVD-ROM */
         CDIO_MMC_FEATURE_PROF_HD_DVD_R      = 0x0051, /**< HD-DVD-R */
         CDIO_MMC_FEATURE_PROF_HD_DVD_RAM    = 0x0052, /**<"HD-DVD-RAM */
-        
+
         CDIO_MMC_FEATURE_PROF_NON_CONFORM   = 0xFFFF, /**< The Logical Unit does not
                                                          conform to any Profile. */
     } cdio_mmc_feature_profile_t;
-  
+
     /**
        @param i_feature MMC feature number
        @return string containing the name of the given feature
     */
     const char *mmc_feature2str( int i_feature );
-    
+
     /**
        Get drive capabilities for a device.
        @param p_cdio the CD object to be acted upon.
@@ -100,12 +113,13 @@ extern "C" {
        @param p_write_cap list of write capabilities that are set on return
        @param p_misc_cap  list of miscellaneous capabilities (that are neither
        read nor write related) that are set on return
+       @return the drive MMC capability level
     */
     void mmc_get_drive_cap ( CdIo_t *p_cdio,
                              /*out*/ cdio_drive_read_cap_t  *p_read_cap,
                              /*out*/ cdio_drive_write_cap_t *p_write_cap,
                              /*out*/ cdio_drive_misc_cap_t  *p_misc_cap);
-    
+
     /**
        Return a string containing the name of the given feature
     */
@@ -117,38 +131,38 @@ extern "C" {
     bool mmc_is_disctype_hd_dvd (cdio_mmc_feature_profile_t disctype);
     bool mmc_is_disctype_overwritable (cdio_mmc_feature_profile_t disctype);
     bool mmc_is_disctype_rewritable(cdio_mmc_feature_profile_t disctype);
-    
+
     /** The default read timeout is 3 minutes. */
 #define MMC_READ_TIMEOUT_DEFAULT 3*60*1000
-    
+
     /**
        Set this to the maximum value in milliseconds that we will
-       wait on an MMC read command.  
+       wait on an MMC read command.
     */
     extern uint32_t mmc_read_timeout_ms;
-    
+
     /**
        Maps a mmc_sense_key_t into a string name.
     */
     extern const char mmc_sense_key2str[16][40];
 
     /**
-       The default timeout (non-read) is 6 seconds. 
+       The default timeout (non-read) is 6 seconds.
     */
 #define MMC_TIMEOUT_DEFAULT 6000
 
     /**
        Set this to the maximum value in milliseconds that we will
-       wait on an MMC command.  
+       wait on an MMC command.
     */
-    extern uint32_t mmc_timeout_ms; 
+    extern uint32_t mmc_timeout_ms;
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
 #endif /* CDIO_MMC_UTIL_H_ */
-/* 
+/*
  * Local variables:
  *  c-file-style: "gnu"
  *  tab-width: 8

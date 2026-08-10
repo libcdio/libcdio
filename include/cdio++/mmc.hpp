@@ -100,7 +100,7 @@ cdio_mmc_level_t mmcGetDriveMmcCap()
 */
 cdio_mmc_inquiry_version_t mmcGetInquiryDriveMmcCap()
 {
-  return mmc_get_drive_mmc_cap_from_inquiry_version(p_cdio);
+  return mmc_get_INQUIRY_version(p_cdio);
 }
 
 /**

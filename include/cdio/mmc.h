@@ -633,7 +633,7 @@ cdio_mmc_level_t mmc_get_drive_mmc_cap(CdIo_t *p_cdio);
   @param p_cdio the CD object to be acted upon.
   @return MMC level supported by the device.
 */
-cdio_mmc_inquiry_version_t mmc_get_drive_mmc_cap_from_inquiry_version(CdIo_t *p_cdio);
+cdio_mmc_inquiry_version_t mmc_get_INQUIRY_version(CdIo_t *p_cdio);
 
 /**
   Get the DVD type associated with cd object.

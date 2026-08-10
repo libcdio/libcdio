@@ -192,7 +192,7 @@ _log_handler (cdio_log_level_t level, const char message[])
 static void
 print_mmc_inquiry_version(CdIo_t *p_cdio)
 {
-  cdio_mmc_inquiry_version_t mmc_level = mmc_get_drive_mmc_cap_from_inquiry_version(p_cdio);
+  cdio_mmc_inquiry_version_t mmc_level = mmc_get_INQUIRY_version(p_cdio);
 
   printf( "SCSI INQUIRY command reports that the drive supports " );
 

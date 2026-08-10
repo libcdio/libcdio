@@ -2,7 +2,7 @@
    Wrappers for specific Multimedia Command (MMC) commands e.g., READ
    DISC, START/STOP UNIT.
 
-   Copyright (C) 2010-2012 Rocky Bernstein <rocky@gnu.org>
+   Copyright (C) 2010-2012, 2026 Rocky Bernstein <rocky@gnu.org>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #endif
 
 #include <cdio/cdio.h>
+#include <cdio/mmc_util.h>
 #include <cdio/mmc_ll_cmds.h>
 #include "cdio_private.h"
 #include "mmc_cmd_helper.h"
@@ -106,6 +107,82 @@ mmc_get_event_status(const CdIo_t *p_cdio, uint8_t out_buf[2])
     }
     return i_status;
 }
+
+/* Helper: issue plain SCSI INQUIRY (CDIO_MMC_GPCMD_INQUIRY), EVPD = 0
+   (standard). Fills buf up to buf_len and returns 0 on success or negative on
+   error.
+*/
+static int mmc_issue_inquiry(CdIo_t *p_cdio, uint8_t *buf, uint16_t buf_len) {
+  int i_status;
+  MMC_CMD_SETUP(CDIO_MMC_GPCMD_GET_CONFIGURATION);
+  CDIO_MMC_SET_LEN16(cdb.field, 2, buf_len);
+  cdb.field[4] = 0x00;
+
+  if (!p_cdio)
+    return -1;
+
+  i_status = mmc_run_cmd(p_cdio, mmc_timeout_ms, &cdb, SCSI_MMC_DATA_READ,
+                         sizeof(buf), &buf);
+  return i_status;
+}
+
+/* Size we request from INQUIRY: large enough to include version descriptors.
+   Note: this should be less than 256 so the number fits in one byte.
+ */
+#define MMC_INQUIRY_ALLOC 252
+
+/**
+   Get the MMC level supported by the device via INQUIRY and the Version field..
+
+   Parse INQUIRY Version and search for version descriptors indicating
+   MMC support. Returns CDIO_INQUIRY_VERSION_* or CDIO_INQUIRY_VERSION_NONE on transport
+   failure.
+*/
+cdio_mmc_inquiry_version_t mmc_get_INQUIRY_version(CdIo_t *p_cdio)
+{
+  /* Largest buffer size we use. */
+  uint8_t buf[MMC_INQUIRY_ALLOC];
+  uint8_t scsi_version;
+  int rc = mmc_issue_inquiry(p_cdio, buf, sizeof(buf));
+  size_t additional_len = (size_t)buf[4];
+  size_t total_len = 5 + additional_len;
+
+  if (rc != 0) {
+    /* transport failure */
+    return CDIO_INQUIRY_VERSION_NONE;
+  }
+
+  /* Basic sanity checks: minimum INQUIRY length is 36 bytes (standard) */
+  if (buf[4] < 31) {
+    /* additional length field too small to contain version descriptors */
+    return CDIO_INQUIRY_VERSION_WEIRD;
+  }
+
+  /* The standard INQUIRY response contains the 'additional length' at byte 4.
+     The total response length is additional_length + 5. We requested a larger
+     buffer already; compute the actual available length from the device's
+     reported additional length to avoid reading past the device-returned
+     data. */
+  if (total_len > sizeof(buf)) {
+    total_len = sizeof(buf);
+  }
+
+  scsi_version = buf[2] & 0x07;
+
+  switch (scsi_version) {
+  case CDIO_INQUIRY_VERSION_1:
+  case CDIO_INQUIRY_VERSION_1a:
+  case CDIO_INQUIRY_VERSION_2:
+  case CDIO_INQUIRY_VERSION_3:
+  case CDIO_INQUIRY_VERSION_45:
+  case CDIO_INQUIRY_VERSION_5:
+    return (cdio_mmc_inquiry_version_t)scsi_version;
+  default:
+    return CDIO_INQUIRY_VERSION_WEIRD;
+  }
+}
+
+
 /**
    Run a SCSI-MMC MODE SELECT (10-byte) command
    and put the results in p_buf.

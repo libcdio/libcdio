@@ -188,35 +188,35 @@ _log_handler (cdio_log_level_t level, const char message[])
   gl_default_cdio_log_handler (level, message);
 }
 
-/*! Prints out SCSI-MMC drive features  */
+/*! Prints out SCSI-MMC INQUIRY Version  */
 static void
-print_mmc_drive_level(CdIo_t *p_cdio)
+print_mmc_inquiry_version(CdIo_t *p_cdio)
 {
-  cdio_mmc_level_t mmc_level = mmc_get_drive_mmc_cap(p_cdio);
+  cdio_mmc_inquiry_version_t mmc_level = mmc_get_drive_mmc_cap_from_inquiry_version(p_cdio);
 
   printf( "SCSI INQUIRY command reports that the drive supports " );
 
   switch(mmc_level) {
-  case CDIO_MMC_LEVEL_WEIRD:
+  case CDIO_INQUIRY_VERSION_WEIRD:
     printf("some nonstandard or degenerate set of MMC\n");
     break;
-  case CDIO_MMC_LEVEL_1:
-  case CDIO_MMC_LEVEL_1a:
+  case CDIO_INQUIRY_VERSION_1:
+  case CDIO_INQUIRY_VERSION_1a:
     printf("MMC-1 (CD)\n");
     break;
-  case CDIO_MMC_LEVEL_2:
+  case CDIO_INQUIRY_VERSION_2:
     printf("MMC-2 (DVD)\n");
     break;
-  case CDIO_MMC_LEVEL_3:
+  case CDIO_INQUIRY_VERSION_3:
     printf("SPC-3 / MMC-3 to MMC-5\n");
     break;
-  case CDIO_MMC_LEVEL_45:
+  case CDIO_INQUIRY_VERSION_45:
     printf("SPC-4 / MMC-5\n");
     break;
-  case CDIO_MMC_LEVEL_5:
+  case CDIO_INQUIRY_VERSION_5:
     printf("SPC-5 / MMC-5/6 (CD/DVD/BD)");
     break;
-  case CDIO_MMC_LEVEL_NONE:
+  case CDIO_INQUIRY_VERSION_NONE:
     printf("no MMC\n");
     break;
   }
@@ -305,7 +305,7 @@ main(int argc, char *argv[])
 	cdio_hwinfo_t          hwinfo;
 
 	p_cdio = cdio_open(*ppsz_cd, driver_id);
-	print_mmc_drive_level(p_cdio);
+	print_mmc_inquiry_version(p_cdio);
 
 	printf("%28s: %s\n", "Drive", *ppsz_cd);
 
@@ -340,7 +340,7 @@ main(int argc, char *argv[])
 
     if (p_cdio) {
 
-      print_mmc_drive_level(p_cdio);
+      print_mmc_inquiry_version(p_cdio);
 
       if (cdio_get_hwinfo(p_cdio, &hwinfo)) {
 	printf("%-28s: %s\n%-28s: %s\n%-28s: %s\n",

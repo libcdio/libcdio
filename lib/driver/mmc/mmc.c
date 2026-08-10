@@ -47,6 +47,7 @@
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
+#include <assert.h>
 
 const char *mmc_cmd2str(uint8_t command) {
   switch (command) {
@@ -834,14 +835,14 @@ mmc_get_drive_cap (CdIo_t *p_cdio,
    (standard). Fills buf up to buf_len and returns 0 on success or negative on
    error.
 */
-static int mmc_issue_inquiry(CdIo_t *p_cdio, uint8_t *buf, size_t buf_len) {
+static int mmc_issue_inquiry(CdIo_t *p_cdio, uint8_t *buf, uint8_t buf_len) {
   mmc_cdb_t cdb = {.field = {
-                       CDIO_MMC_GPCMD_INQUIRY,
-                       0x00, /* EVPD = 0, standard INQUIRY */
-                       0x00, /* Page code (unused when EVPD=0) */
-                       0x00, (uint8_t)buf_len, /* Allocation length */
-                       0x00                    /* Control */
-                   }};
+       CDIO_MMC_GPCMD_INQUIRY, 0x00, /* EVPD = 0, standard INQUIRY */
+       0x00, /* Page code (unused when EVPD=0) */
+       0x00, /* MSB allocation length is 0. */
+       0x00, buf_len, /* LSB allocation length */
+       0x00  /* Control */
+    }};
   int i_status;
 
   if (!p_cdio)
@@ -859,17 +860,19 @@ static int mmc_issue_inquiry(CdIo_t *p_cdio, uint8_t *buf, size_t buf_len) {
    @return the drive capabilities.
 */
 
-/* Size we request from INQUIRY: large enough to include version descriptors */
+/* Size we request from INQUIRY: large enough to include version descriptors.
+   Note: this should be less than 256 so the number fits in one byte.
+ */
 #define MMC_INQUIRY_ALLOC 252
 
 /**
-   Get the MMC level supported by the device.
+   Get the MMC level supported by the device via INQUIRY and the Version field..
 
-   Parse INQUIRY standard data and search for version descriptors indicating
-   MMC support. Returns CDIO_MMC_LEVEL_* or CDIO_MMC_LEVEL_NONE on transport
+   Parse INQUIRY Version and search for version descriptors indicating
+   MMC support. Returns CDIO_INQUIRY_VERSION_* or CDIO_INQUIRY_VERSION_NONE on transport
    failure.
 */
-cdio_mmc_level_t mmc_get_drive_mmc_cap(CdIo_t *p_cdio)
+cdio_mmc_inquiry_version_t mmc_get_drive_mmc_cap_from_inquiry_version(CdIo_t *p_cdio)
 {
   /* Largest buffer size we use. */
   uint8_t buf[MMC_INQUIRY_ALLOC];
@@ -880,13 +883,13 @@ cdio_mmc_level_t mmc_get_drive_mmc_cap(CdIo_t *p_cdio)
 
   if (rc != 0) {
     /* transport failure */
-    return CDIO_MMC_LEVEL_NONE;
+    return CDIO_INQUIRY_VERSION_NONE;
   }
 
   /* Basic sanity checks: minimum INQUIRY length is 36 bytes (standard) */
   if (buf[4] < 31) {
     /* additional length field too small to contain version descriptors */
-    return CDIO_MMC_LEVEL_WEIRD;
+    return CDIO_INQUIRY_VERSION_WEIRD;
   }
 
   /* The standard INQUIRY response contains the 'additional length' at byte 4.
@@ -901,14 +904,43 @@ cdio_mmc_level_t mmc_get_drive_mmc_cap(CdIo_t *p_cdio)
   scsi_version = buf[2] & 0x07;
 
   switch (scsi_version) {
-  case CDIO_MMC_LEVEL_1:
-  case CDIO_MMC_LEVEL_1a:
-  case CDIO_MMC_LEVEL_2:
-  case CDIO_MMC_LEVEL_3:
-  case CDIO_MMC_LEVEL_45:
-  case CDIO_MMC_LEVEL_5:
-    return (cdio_mmc_level_t)scsi_version;
+  case CDIO_INQUIRY_VERSION_1:
+  case CDIO_INQUIRY_VERSION_1a:
+  case CDIO_INQUIRY_VERSION_2:
+  case CDIO_INQUIRY_VERSION_3:
+  case CDIO_INQUIRY_VERSION_45:
+  case CDIO_INQUIRY_VERSION_5:
+    return (cdio_mmc_inquiry_version_t)scsi_version;
   default:
+    return CDIO_INQUIRY_VERSION_WEIRD;
+  }
+}
+
+/**
+   Get the MMC level supported by the device.
+*/
+cdio_mmc_level_t
+mmc_get_drive_mmc_cap(CdIo_t *p_cdio)
+{
+  uint8_t buf[256] = { 0, };
+  uint8_t len;
+  int rc = mmc_mode_sense(p_cdio, buf, sizeof(buf),
+			  CDIO_MMC_CAPABILITIES_PAGE);
+
+  if (DRIVER_OP_SUCCESS != rc) {
+    return CDIO_MMC_LEVEL_NONE;
+  }
+
+  len = buf[1];
+  if (16 > len) {
+    return CDIO_MMC_LEVEL_WEIRD;
+  } else if (28 <= len) {
+    return CDIO_MMC_LEVEL_3;
+  } else if (24 <= len) {
+    return CDIO_MMC_LEVEL_2;
+  } else if (20 <= len) {
+    return CDIO_MMC_LEVEL_1;
+  } else {
     return CDIO_MMC_LEVEL_WEIRD;
   }
 }

@@ -164,6 +164,41 @@ print_status_sense(int i_status, int i_sense_valid,
     printf("\n");
 }
 
+/*! Prints out SCSI-MMC INQUIRY version  */
+static void
+print_mmc_inquiry_version(CdIo_t *p_cdio)
+{
+  cdio_mmc_inquiry_version_t mmc_level = mmc_get_INQUIRY_version(p_cdio);
+
+  printf( "SCSI INQUIRY command reports that the drive supports " );
+
+  switch(mmc_level) {
+  case CDIO_INQUIRY_VERSION_WEIRD:
+    printf("some nonstandard or degenerate set of MMC\n");
+    break;
+  case CDIO_INQUIRY_VERSION_1:
+  case CDIO_INQUIRY_VERSION_1a:
+    printf("MMC-1 (CD)\n");
+    break;
+  case CDIO_INQUIRY_VERSION_2:
+    printf("MMC-2 (DVD)\n");
+    break;
+  case CDIO_INQUIRY_VERSION_3:
+    printf("SPC-3 / MMC-3 to MMC-5\n");
+    break;
+  case CDIO_INQUIRY_VERSION_45:
+    printf("SPC-4 / MMC-5\n");
+    break;
+  case CDIO_INQUIRY_VERSION_5:
+    printf("SPC-5 / MMC-5/6 (CD/DVD/BD)");
+    break;
+  case CDIO_INQUIRY_VERSION_NONE:
+    printf("no MMC\n");
+    break;
+  }
+  printf("\n");
+}
+
 /* --------------------------- MMC commands ------------------------------ */
 
 
@@ -463,7 +498,10 @@ main(int argc, const char *argv[])
 		/* Test the MMC enhancements of version 0.83 in december 2009 */
 		i_ret = test_read(ppsz_drives[0],
 				  cdio_loglevel_default == CDIO_LOG_DEBUG);
-		if (0 != i_ret) exit(i_ret + 16);
+                if (0 != i_ret)
+                  exit(i_ret + 16);
+
+		print_mmc_inquiry_version(p_cdio);
 	    }
 	} else if (2 == i_ret && b_verbose)
 	    printf("Drive is empty... skipping remaining tests.\n");

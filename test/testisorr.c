@@ -282,6 +282,61 @@ out:
   return ret;
 }
 
+static int
+check_malformed_record(void)
+{
+  const char *source_name = DATA_DIR "/bad-dir.iso";
+  char temp_name[] = "libcdio-malformed-rr-XXXXXX";
+  FILE *source = NULL;
+  FILE *temp = NULL;
+  iso9660_t *p_iso = NULL;
+  uint8_t buffer[4096];
+  size_t nread;
+  int fd;
+  int result = 1;
+
+  source = fopen(source_name, "rb");
+  fd = mkstemp(temp_name);
+  if (!source || fd < 0) {
+    if (fd >= 0)
+      close(fd);
+    goto out;
+  }
+  temp = fdopen(fd, "wb+");
+  if (!temp) {
+    close(fd);
+    goto out;
+  }
+
+  while ((nread = fread(buffer, 1, sizeof(buffer), source)) != 0) {
+    if (fwrite(buffer, 1, nread, temp) != nread)
+      goto out;
+  }
+  if (fseek(temp, 23 * ISO_BLOCKSIZE, SEEK_SET) != 0
+      || fputc(1, temp) == EOF)
+    goto out;
+  if (fclose(temp) != 0) {
+    temp = NULL;
+    goto out;
+  }
+  temp = NULL;
+
+  p_iso = iso9660_open_ext(temp_name, ISO_EXTENSION_ROCK_RIDGE);
+  if (!p_iso || iso9660_have_rr(p_iso, 0) != dunno)
+    goto out;
+  result = 0;
+
+out:
+  if (p_iso)
+    iso9660_close(p_iso);
+  if (temp)
+    fclose(temp);
+  if (source)
+    fclose(source);
+  remove(temp_name);
+  return result;
+}
+
 int
 main(int argc, const char *argv[])
 {
@@ -339,6 +394,11 @@ main(int argc, const char *argv[])
   if (check_excessive_path_depth() != 0) {
     fprintf(stderr, "Excessive ISO path depth was not rejected\n");
     return 5;
+  }
+
+  if (check_malformed_record() != 0) {
+    fprintf(stderr, "Malformed directory record was not rejected\n");
+    return 6;
   }
 
   return 0;

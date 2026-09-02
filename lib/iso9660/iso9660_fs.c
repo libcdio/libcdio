@@ -2091,6 +2091,11 @@ iso_have_rr_traverse (iso9660_t *p_iso, const iso9660_stat_t *_root,
 
       p_stat = _iso9660_dir_to_statbuf (p_iso9660_dir, NULL, p_iso,
 					p_iso->b_xa, p_iso->u_joliet_level);
+      if (!p_stat) {
+	cdio_warn("Bad directory information while checking Rock Ridge");
+	free(_dirbuf);
+	return dunno;
+      }
       have_rr = p_stat->rr.b3_rock;
       if ( have_rr != yep) {
 	if (strlen(splitpath[0]) == 0)

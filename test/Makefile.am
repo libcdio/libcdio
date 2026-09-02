@@ -55,11 +55,12 @@ test_lib_driver_util_LDADD    = $(LIBCDIO_LIBS) $(LTLIBICONV)
 testpregap_LDADD    = $(LIBCDIO_LIBS) $(LTLIBICONV)
 
 check_SCRIPTS = check_nrg.sh  check_cue.sh  check_cd_read.sh check_udf.sh \
-                check_iso.sh  check_bad_iso.sh check_multiextent.sh \
+                check_iso.sh  check_iso_long_path.sh check_bad_iso.sh check_multiextent.sh \
                 check_fuzzyiso.sh check_opts.sh check_deep_directory.sh \
                 check_iso_read.sh check_cdtext.sh
 
 check_udf.sh: @abs_top_builddir@/example/extract$(EXEEXT)
+check_iso_long_path.sh: @abs_top_builddir@/example/extract$(EXEEXT)
 
 @abs_top_builddir@/example/extract$(EXEEXT):
 	$(MAKE) -C @abs_top_builddir@/example extract$(EXEEXT)
@@ -84,6 +85,7 @@ EXTRA_DIST = $(check_SCRIPTS) $(check_DATA) \
 	check_common_fn check_cue.sh.in check_nrg.sh.in \
 	check_legal.regex \
 	check_iso.sh.in \
+	check_iso_long_path.sh.in \
 	check_iso_read.sh.in
 
 TESTS = $(check_PROGRAMS) $(check_SCRIPTS)

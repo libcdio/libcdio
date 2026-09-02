@@ -1,0 +1,101 @@
+#!@SHELL@
+
+if test -z "$srcdir" ; then
+  srcdir=$(pwd)
+fi
+
+if test "X$top_builddir" = "X" ; then
+  top_builddir=$(pwd)/..
+fi
+
+. "${top_builddir}/test/check_common_fn"
+
+extract_program="${top_builddir}/example/extract@EXEEXT@"
+if test ! -x "$extract_program" ; then
+  exit $SKIP_TEST_EXITCODE
+fi
+
+if ! command -v dd >/dev/null 2>&1 || test ! -r /dev/zero; then
+  echo "-- $0: bounded ISO extraction path test skipped (dd or /dev/zero unavailable)."
+  exit $SKIP_TEST_EXITCODE
+fi
+
+put733()
+{
+    value=$1
+    file=$2
+    offset=$3
+    b0=$(printf '%03o' $((value % 256)))
+    b1=$(printf '%03o' $(((value / 256) % 256)))
+    b2=$(printf '%03o' $(((value / 65536) % 256)))
+    b3=$(printf '%03o' $(((value / 16777216) % 256)))
+    printf "\\$b0\\$b1\\$b2\\$b3\\$b3\\$b2\\$b1\\$b0" |
+        dd of="$file" bs=1 seek=$offset count=8 conv=notrunc 2>/dev/null
+}
+
+long_base=${TMPDIR:-/tmp}/libcdio-iso-long-path-$$
+long_image=$long_base.iso
+long_block=$long_base.block
+long_name=$long_base.name
+long_log=$long_base.log
+
+mkdir -p "$long_base"
+dd if=/dev/zero of="$long_image" bs=2048 count=52 2>/dev/null
+dd if=/dev/zero of="$long_block" bs=2048 count=1 2>/dev/null
+dd if=/dev/zero bs=200 count=1 2>/dev/null | tr '\000' D > "$long_name"
+printf '\001CD001\001' | dd of="$long_block" bs=1 seek=0 conv=notrunc 2>/dev/null
+put733 52 "$long_block" 80
+printf '\042' | dd of="$long_block" bs=1 seek=156 conv=notrunc 2>/dev/null
+put733 20 "$long_block" 158
+put733 2048 "$long_block" 166
+printf '\002\001\000\000\001\001\000' | dd of="$long_block" bs=1 seek=181 conv=notrunc 2>/dev/null
+dd if="$long_block" of="$long_image" bs=2048 seek=16 conv=notrunc 2>/dev/null
+dd if=/dev/zero of="$long_block" bs=2048 count=1 2>/dev/null
+printf '\377CD001\001' | dd of="$long_block" bs=1 seek=0 conv=notrunc 2>/dev/null
+dd if="$long_block" of="$long_image" bs=2048 seek=17 conv=notrunc 2>/dev/null
+
+long_i=0
+while test $long_i -le 30 ; do
+    dd if=/dev/zero of="$long_block" bs=2048 count=1 2>/dev/null
+    printf '\042' | dd of="$long_block" bs=1 seek=0 conv=notrunc 2>/dev/null
+    put733 $((20 + long_i)) "$long_block" 2
+    put733 2048 "$long_block" 10
+    printf '\002\001\000\000\001\001\000' | dd of="$long_block" bs=1 seek=25 conv=notrunc 2>/dev/null
+    printf '\042' | dd of="$long_block" bs=1 seek=34 conv=notrunc 2>/dev/null
+    put733 $((19 + long_i)) "$long_block" 36
+    put733 2048 "$long_block" 44
+    printf '\002\001\000\000\001\001\000' | dd of="$long_block" bs=1 seek=59 conv=notrunc 2>/dev/null
+    printf '\352' | dd of="$long_block" bs=1 seek=68 conv=notrunc 2>/dev/null
+    put733 $((21 + long_i)) "$long_block" 70
+    if test $long_i -lt 30 ; then
+        put733 2048 "$long_block" 78
+        printf '\002' | dd of="$long_block" bs=1 seek=93 conv=notrunc 2>/dev/null
+    else
+        put733 5 "$long_block" 78
+    fi
+    printf '\001\000\000\001\310' | dd of="$long_block" bs=1 seek=96 conv=notrunc 2>/dev/null
+    dd if="$long_name" of="$long_block" bs=1 seek=101 conv=notrunc 2>/dev/null
+    dd if="$long_block" of="$long_image" bs=2048 seek=$((20 + long_i)) conv=notrunc 2>/dev/null
+    long_i=$((long_i + 1))
+done
+
+cmd="$extract_program $long_image $long_base/out"
+"$extract_program" "$long_image" "$long_base/out" > "$long_log" 2>&1
+LONG_RC=$?
+RC=0
+if test $LONG_RC -eq 0 || ! grep -q 'Image path is too long' "$long_log" ; then
+    echo "$0: long ISO path was not rejected before buffer use"
+    RC=1
+fi
+rm -f "$long_image" "$long_block" "$long_name" "$long_log"
+if test -d "$long_base" ; then
+    rm -fr "$long_base"
+fi
+check_result $RC 'bounded ISO extraction path test' "$cmd"
+
+exit $RC
+
+#;;; Local Variables: ***
+#;;; mode:shell-script ***
+#;;; eval: (sh-set-shell "bash") ***
+#;;; End: ***

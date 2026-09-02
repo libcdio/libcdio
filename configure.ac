@@ -762,6 +762,7 @@ AC_CONFIG_FILES([test/check_iso.sh], [chmod +x test/check_iso.sh])
 AC_CONFIG_FILES([test/check_nrg.sh], [chmod +x test/check_nrg.sh])
 AC_CONFIG_FILES([test/check_udf.sh], [chmod +x test/check_udf.sh])
 AC_CONFIG_FILES([test/check_iso_read.sh], [chmod +x test/check_iso_read.sh])
+AC_CONFIG_FILES([test/check_iso_long_path.sh], [chmod +x test/check_iso_long_path.sh])
 AC_OUTPUT
 
 AC_MSG_NOTICE([

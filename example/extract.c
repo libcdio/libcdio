@@ -210,7 +210,7 @@ static int iso_extract_files(iso9660_t* p_iso, const char *psz_path)
     return 1;
 
   i_length = snprintf(psz_fullpath, sizeof(psz_fullpath), "%s%s/", psz_extract_dir, psz_path);
-  if (i_length < 0)
+  if (i_length < 0 || (size_t)i_length >= sizeof(psz_fullpath))
     return 1;
   psz_basename = &psz_fullpath[i_length];
 
@@ -226,6 +226,10 @@ static int iso_extract_files(iso9660_t* p_iso, const char *psz_path)
     if ( (strcmp(p_statbuf->filename, ".") == 0)
       || (strcmp(p_statbuf->filename, "..") == 0) )
       continue;
+    if (strlen(p_statbuf->filename) >= sizeof(psz_fullpath) - (size_t)i_length) {
+      fprintf(stderr, "  Image path is too long\n");
+      goto out;
+    }
     iso9660_name_translate_ext(p_statbuf->filename, psz_basename, i_joliet_level);
     if (!path_component_is_safe(psz_basename)) {
       fprintf(stderr, "  Refusing unsafe image filename\n");

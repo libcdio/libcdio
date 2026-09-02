@@ -97,7 +97,6 @@ if test -d "$extract_base" ; then
 fi
 check_result $RC 'ISO extraction path test' "$cmd"
 
-
 exit $RC
 
 #;;; Local Variables: ***

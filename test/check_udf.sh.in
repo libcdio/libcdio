@@ -70,6 +70,49 @@ if test -d "$extract_base" ; then
 fi
 check_result $RC 'UDF extraction path test' "$cmd"
 
+cycle_base=/tmp/udf-cycle-$$
+cycle_dir=$cycle_base/out
+cycle_udf=$cycle_base.udf
+cycle_hybrid=$cycle_base.hybrid
+mkdir "$cycle_base"
+cp "$abs_top_srcdir/test/data/udf102.iso" "$cycle_udf"
+printf '\002' > "$cycle_base.characteristics"
+printf '\004' > "$cycle_base.type"
+printf '\144\000\000\000' > "$cycle_base.length"
+printf '\003\000\000\000' > "$cycle_base.position"
+printf '\002' > "$cycle_base.fid-length"
+printf '\010x' > "$cycle_base.fid-name"
+dd if="$cycle_base.characteristics" of="$cycle_udf" bs=1 seek=$((596 * 2048 + 40 + 18)) conv=notrunc 2>/dev/null
+dd if="$cycle_base.fid-length" of="$cycle_udf" bs=1 seek=$((596 * 2048 + 40 + 19)) conv=notrunc 2>/dev/null
+dd if="$cycle_base.fid-name" of="$cycle_udf" bs=1 seek=$((596 * 2048 + 40 + 38)) conv=notrunc 2>/dev/null
+dd if="$cycle_base.type" of="$cycle_udf" bs=1 seek=$((597 * 2048 + 27)) conv=notrunc 2>/dev/null
+dd if="$cycle_base.length" of="$cycle_udf" bs=1 seek=$((597 * 2048 + 56)) conv=notrunc 2>/dev/null
+dd if="$cycle_base.position" of="$cycle_udf" bs=1 seek=$((597 * 2048 + 204)) conv=notrunc 2>/dev/null
+cmd="$extract_program $cycle_udf $cycle_dir"
+$cmd >/dev/null 2>&1
+RC=$?
+if test $RC -eq 0 ; then
+    echo "$0: cyclic UDF extraction was not bounded"
+    RC=1
+else
+    RC=0
+fi
+cp "$cycle_udf" "$cycle_hybrid"
+dd if="$abs_top_srcdir/test/data/copying.iso" of="$cycle_hybrid" bs=2048 skip=16 seek=16 count=1 conv=notrunc 2>/dev/null
+info_output=$cycle_base.info
+"$top_builddir/src/iso-info" --no-header -U "$cycle_hybrid" > "$info_output" 2>&1
+info_rc=$?
+info_lines=`wc -l < "$info_output"`
+if test $info_rc -ne 0 || test $info_lines -gt 300 ; then
+    echo "$0: cyclic UDF listing was not bounded"
+    RC=1
+fi
+rm -f "$cycle_udf" "$cycle_hybrid" "$cycle_base.characteristics" "$cycle_base.type" "$cycle_base.length" "$cycle_base.position" "$cycle_base.fid-length" "$cycle_base.fid-name" "$info_output"
+if test -d "$cycle_base" ; then
+    rm -fr "$cycle_base"
+fi
+check_result $RC 'bounded UDF extraction test' "$cmd"
+
 extract_dir=/tmp/udf-bad-fid-$$
 udf_iso=$abs_top_srcdir/test/data/bad-fid.udf
 cmd="$extract_program $udf_iso $extract_dir"

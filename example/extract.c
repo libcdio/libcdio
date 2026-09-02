@@ -75,6 +75,8 @@
 static const char *psz_extract_dir;
 static uint8_t i_joliet_level = 0;
 
+#define MAX_UDF_DIRECTORY_DEPTH 64
+
 static void log_handler (cdio_log_level_t level, const char *message)
 {
   switch(level) {
@@ -102,7 +104,8 @@ path_component_is_safe(const char *psz_name)
   return true;
 }
 
-static int udf_extract_files(udf_t *p_udf, udf_dirent_t *p_udf_dirent, const char *psz_path)
+static int udf_extract_files(udf_t *p_udf, udf_dirent_t *p_udf_dirent,
+                             const char *psz_path, unsigned int depth)
 {
   FILE *fd = NULL;
   int i_length;
@@ -114,6 +117,11 @@ static int udf_extract_files(udf_t *p_udf, udf_dirent_t *p_udf_dirent, const cha
 
   if ((p_udf_dirent == NULL) || (psz_path == NULL))
     return 1;
+  if (depth >= MAX_UDF_DIRECTORY_DEPTH) {
+    fprintf(stderr, "  Maximum UDF directory depth exceeded\n");
+    udf_dirent_free(p_udf_dirent);
+    return 1;
+  }
 
   while (udf_readdir(p_udf_dirent)) {
     psz_basename = udf_get_filename(p_udf_dirent);
@@ -138,7 +146,7 @@ static int udf_extract_files(udf_t *p_udf, udf_dirent_t *p_udf_dirent, const cha
 	p_udf_dirent2 = udf_opendir(p_udf_dirent);
 	if (p_udf_dirent2 != NULL) {
 	  if (udf_extract_files(p_udf, p_udf_dirent2,
-				&psz_fullpath[strlen(psz_extract_dir)]))
+				&psz_fullpath[strlen(psz_extract_dir)], depth + 1))
 	    goto out;
 	}
       } else if (-1 == rc) {
@@ -316,7 +324,7 @@ int main(int argc, char** argv)
   printf("-- Partition number: %d\n", udf_get_part_number(p_udf));
 
   /* Recursively extract files */
-  r = udf_extract_files(p_udf, p_udf_root, "");
+  r = udf_extract_files(p_udf, p_udf_root, "", 0);
 
   goto out;
 

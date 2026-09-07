@@ -18,9 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * \file cdtext.h
+ * @file cdtext.h
  *
- * \brief The top-level header for CD-Text information. Applications
+ * @brief The top-level header for CD-Text information. Applications
  *  include this for CD-Text access.
 */
 

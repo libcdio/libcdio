@@ -1,5 +1,5 @@
 /* -*- c -*-
-    Copyright (C) 2005, 2007, 2008, 2019 Rocky Bernstein <rocky@gnu.org>
+    Copyright (C) 2005, 2007, 2008, 2019, 2026 Rocky Bernstein <rocky@gnu.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/** \file audio.h
+/** @file audio.h
  *
- *  \brief The top-level header for CD audio-related libcdio
+ *  @brief The top-level header for CD audio-related libcdio
  *         calls.  These control playing of the CD-ROM through its
  *         line-out jack.
  */
@@ -65,7 +65,7 @@ extern "C" {
     @param p_cdio the CD object to be acted upon.
     @param p_volume place to put the list of volume outputs levels
 
-    \p p_volume can be \p NULL in which case we return only whether
+    @p p_volume can be `NULL` in which case we return only whether
     the driver has the ability to get the volume or not.
 
   */

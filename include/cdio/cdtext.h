@@ -263,7 +263,7 @@ cdtext_t *cdtext_init (void);
     - mmc_read_cdtext()
     - mmc_read_toc_cdtext()
 
-  Each sets in the buffer passed into values that begin with a 4-byte header. This should
+  Each sets the buffer passed in to values that begin with a 4-byte header. This should
   be skipped. Here is some sample code:
 
   @code
@@ -274,7 +274,7 @@ cdtext_t *cdtext_init (void);
   @endcode
 
   Instead of calling cdtext_data_init(), you can call
-  cdio_get_cdtext() which returns a pointer to the #cdtext_t object
+  cdio_get_cdtext(), which returns a pointer to the #cdtext_t object
   that is attached to the inquired `CdIo_t `object. This #cdtext_t
   object gets created and filled if none is yet attached to the
   inquired `CdIo_t` object.
@@ -303,20 +303,20 @@ void cdtext_destroy (cdtext_t *p_cdtext);
 char *cdtext_get (const cdtext_t *p_cdtext, cdtext_field_t key, track_t track);
 
 /**
-  Returns value of the given field.
+  Returns the value of the given field.
 
-  `NULL` is returned if key is #CDTEXT_FIELD_INVALID or the field is not set.
+  `NULL` is returned if the key is #CDTEXT_FIELD_INVALID or the field is not set.
   Strings are encoded in UTF-8.
 
   @param p_cdtext the CD-TEXT object
   @param field type of the field to return
-  @param track specifies the track, 0 stands for disc
+  @param track specifies the track; 0 stands for disc
 */
 const char *cdtext_get_const (const cdtext_t *p_cdtext, cdtext_field_t field,
                               track_t track);
 
 /**
-  Returns the discs genre code.
+  Returns the disc's genre code.
 
   @param p_cdtext the CD-TEXT object
 */
@@ -363,7 +363,7 @@ bool cdtext_select_language(cdtext_t *p_cdtext, cdtext_lang_t language);
            as expected by cdtext_set_language_index().
            Use cdtext_select_language() with the values of array elements.
 
-  Internally the list is stored in a static array.
+  Internally, the list is stored in a static array.
 
   @param p_cdtext the CD-TEXT object
   @return `NULL` if p_cdtext is `NULL`, or an array of 8 cdtext_lang_t elements:
@@ -375,7 +375,7 @@ cdtext_lang_t *cdtext_list_languages (const cdtext_t *p_cdtext);
 /**
   Returns an array of available languages or `NULL`.
   The index of an array element may be used to select the corresponding
-  language block by call cdtext_set_language_index().
+  language block by calling cdtext_set_language_index().
 
   The return value is a pointer into the memory range of *p_cdtext.
   Do not use it after having freed that memory range.
@@ -389,7 +389,7 @@ cdtext_lang_t *cdtext_list_languages (const cdtext_t *p_cdtext);
   If an enumeration is #CDTEXT_LANGUAGE_BLOCK_UNUSED, then the block does not
   exist on CD or could not be read in CD-TEXT for some reason.
 
-  Otherwise, the enumeration of element will be a value in
+  Otherwise, the enumeration of the element will be a value in
   #CDTEXT_LANGUAGE_UNKNOWN to #CDTEXT_LANGUAGE_AMHARIC, and is a block
   in that language.
 */

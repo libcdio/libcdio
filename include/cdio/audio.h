@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-  /** This struct is used by the cdio_audio_read_subchannel */
+  /** This struct is used by the cdio_audio_read_subchannel() */
   typedef struct cdio_subchannel_s
   {
     uint8_t format;
@@ -43,14 +43,14 @@ extern "C" {
     msf_t   rel_addr;
   } cdio_subchannel_t;
 
-  /** This struct is used by cdio_audio_get_volume and cdio_audio_set_volume */
+  /** This struct is used by cdio_audio_get_volume() and cdio_audio_set_volume() */
   typedef struct cdio_audio_volume_s
   {
     uint8_t level[4];
   } cdio_audio_volume_t;
 
 
-  /** This struct is used by the CDROMPLAYTRKIND ioctl */
+  /** This struct is used by the `CDROMPLAYTRKIND` ioctl */
   typedef struct cdio_track_index_s
   {
     uint8_t	i_start_track;	/**< start track */

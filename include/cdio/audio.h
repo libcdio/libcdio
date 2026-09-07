@@ -60,12 +60,12 @@ extern "C" {
   } cdio_track_index_t;
 
   /**
-    Get volume of an audio CD.
+    Get the volume of an audio CD.
 
     @param p_cdio the CD object to be acted upon.
-    @param p_volume place to put the list of volume outputs levels
+    @param p_volume place to put the list of volume output levels
 
-    @p p_volume can be `NULL` in which case we return only whether
+    @p p_volume can be `NULL`, in which case we return only whether
     the driver has the ability to get the volume or not.
 
   */
@@ -122,7 +122,7 @@ extern "C" {
   driver_return_code_t cdio_audio_resume (CdIo_t *p_cdio);
 
   /**
-    Set volume of an audio CD.
+    Set the volume of an audio CD.
 
     @param p_cdio the CD object to be acted upon.
     @param p_volume place for returned volume-level information

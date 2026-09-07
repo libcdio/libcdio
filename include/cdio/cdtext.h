@@ -235,7 +235,7 @@ const char *cdtext_lang2str (cdtext_lang_t i);
  * @param lang language to look up
  *
  * @return If @p lang is among the possible results of cdtext_lang2str():
- *         the @ref cdtext_lang_t which is associated, or
+ *         the #cdtext_lang_t which is associated, or
  *         #CDTEXT_LANGUAGE_INVALID otherwise.
  */
 cdtext_lang_t cdtext_str2lang (const char *lang);
@@ -246,18 +246,18 @@ cdtext_lang_t cdtext_str2lang (const char *lang);
 const char *cdtext_field2str (cdtext_field_t i);
 
 /**
-  Initialize a new `cdtext_t` structure.
+  Initialize a new #cdtext_t structure.
 
   When the structure is no longer needed, release the
-  resources using cdtext_delete.
+  resources using cdtext_destroy().
 */
 cdtext_t *cdtext_init (void);
 
 /**
-  Fill a cdtext_t object with text pack bytes as they were handed out by the
+  Fill a #cdtext_t object with text pack bytes as they were handed out by the
   CD drive, but without the 4-byte header which the drive prepended.
 
-  The text pack data can be obtained by the calls
+  The text pack data can be obtained by the calls:
 
     - cdio_get_cdtext_raw()
     - mmc_read_cdtext()
@@ -274,8 +274,8 @@ cdtext_t *cdtext_init (void);
   @endcode
 
   Instead of calling cdtext_data_init(), you can call
-  cdio_get_cdtext() which returns a pointer to the `cdtext_t` object
-  that is attached to the inquired `CdIo_t `object. This `cdtext_t`
+  cdio_get_cdtext() which returns a pointer to the #cdtext_t object
+  that is attached to the inquired `CdIo_t `object. This #cdtext_t
   object gets created and filled if none is yet attached to the
   inquired `CdIo_t` object.
 
@@ -288,14 +288,14 @@ cdtext_t *cdtext_init (void);
 int cdtext_data_init(cdtext_t *p_cdtext, uint8_t *wdata, size_t i_data);
 
 /**
-  Free memory associated with the given @p cdtext_t object.
+  Free memory associated with the given #cdtext_t object.
 
   @param p_cdtext the CD-TEXT object
 */
 void cdtext_destroy (cdtext_t *p_cdtext);
 
 /**
-  Returns a copy of the return value of cdtext_get_const or NULL.
+  Returns a copy of the return value of cdtext_get_const or `NULL`.
 
   Must be freed using cdio_free() when done.
   @see cdtext_get_const
@@ -305,7 +305,7 @@ char *cdtext_get (const cdtext_t *p_cdtext, cdtext_field_t key, track_t track);
 /**
   Returns value of the given field.
 
-  NULL is returned if key is CDTEXT_INVALID or the field is not set.
+  `NULL` is returned if key is #CDTEXT_FIELD_INVALID or the field is not set.
   Strings are encoded in UTF-8.
 
   @param p_cdtext the CD-TEXT object
@@ -357,7 +357,7 @@ bool cdtext_select_language(cdtext_t *p_cdtext, cdtext_lang_t language);
 
   @deprecated Use cdtext_list_languages_v2()
 
-  Returns a list of available languages or NULL.
+  Returns a list of available languages or `NULL`.
 
   __WARNING__: The indices in the returned array _do not_ match the indexing
            as expected by cdtext_set_language_index().
@@ -366,14 +366,14 @@ bool cdtext_select_language(cdtext_t *p_cdtext, cdtext_lang_t language);
   Internally the list is stored in a static array.
 
   @param p_cdtext the CD-TEXT object
-  @return NULL if p_cdtext is NULL, or an array of 8 cdtext_lang_t elements:
+  @return `NULL` if p_cdtext is `NULL`, or an array of 8 cdtext_lang_t elements:
           CDTEXT_LANGUAGE_UNKNOWN not only marks language code 0x00
           but also invalid language codes and invalid language blocks.
 */
 cdtext_lang_t *cdtext_list_languages (const cdtext_t *p_cdtext);
 
 /**
-  Returns an array of available languages or NULL.
+  Returns an array of available languages or `NULL`.
   The index of an array element may be used to select the corresponding
   language block by call cdtext_set_language_index().
 
@@ -381,7 +381,7 @@ cdtext_lang_t *cdtext_list_languages (const cdtext_t *p_cdtext);
   Do not use it after having freed that memory range.
 
   @param p_cdtext the CD-TEXT object
-  @return NULL if p_cdtext is NULL, or an array of 8 cdtext_lang_t elements.
+  @return `NULL` if p_cdtext is `NULL`, or an array of 8 cdtext_lang_t elements.
 
   If an enumeration is #CDTEXT_LANGUAGE_INVALID, then the language block has an invalid
   language code.
@@ -411,7 +411,7 @@ cdtext_set_language_index(cdtext_t *p_cdtext, int idx);
 /**
   Sets the given field at the given track to the given value.
 
-  Recodes to UTF-8 if charset is not @p NULL.
+  Recodes to UTF-8 if charset is not `NULL`.
 
   @param p_cdtext the CD-TEXT object
   @param key field to set

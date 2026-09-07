@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2018 Thomas Schmitt
-    Copyright (C) 2004, 2005, 2008, 2012, 2019 Rocky Bernstein <rocky@gnu.org>
+    Copyright (C) 2004, 2005, 2008, 2012, 2019, 2026 Rocky Bernstein <rocky@gnu.org>
     adapted from cuetools
     Copyright (C) 2003 Svend Sanjay Sorensen <ssorensen@fastmail.fm>
 
@@ -24,7 +24,7 @@
  *  include this for CD-Text access.
 */
 
-
+
 #ifndef CDIO_CDTEXT_H_
 #define CDIO_CDTEXT_H_
 
@@ -91,7 +91,7 @@ typedef enum {
   CDTEXT_GENRE_WORLD_MUSIC    = 28    /**< World Music */
 } cdtext_genre_t;
 
-/** \typedef typedef enum cdtext_lang_t
+/** \typedef cdtext_lang_t
 
     \brief Enumeration of possible CD-TEXT languages.
 
@@ -228,15 +228,16 @@ const char *cdtext_genre2str (cdtext_genre_t i);
 const char *cdtext_lang2str (cdtext_lang_t i);
 
 /**
-  Return the language code of a given language string representation.
-  This is the inverse of cdtext_lang2str().
-
-  @param lang language to look up
-
-  @return if lang is among the possible results of cdtext_lang2str():
-          the \p cdtext_lang_t which is associated, or \p
-          CDTEXT_LANGUAGE_INVALID otherwise.
-*/
+ * Return the language code of a given language string representation.
+ *
+ * This is the inverse of cdtext_lang2str().
+ *
+ * @param lang language to look up
+ *
+ * @return If @p lang is among the possible results of cdtext_lang2str():
+ *         the @ref cdtext_lang_t which is associated, or
+ *         #CDTEXT_LANGUAGE_INVALID otherwise.
+ */
 cdtext_lang_t cdtext_str2lang (const char *lang);
 
 /**
@@ -245,7 +246,7 @@ cdtext_lang_t cdtext_str2lang (const char *lang);
 const char *cdtext_field2str (cdtext_field_t i);
 
 /**
-  Initialize a new \p cdtext_t structure.
+  Initialize a new `cdtext_t` structure.
 
   When the structure is no longer needed, release the
   resources using cdtext_delete.
@@ -273,10 +274,10 @@ cdtext_t *cdtext_init (void);
   @endcode
 
   Instead of calling cdtext_data_init(), you can call
-  cdio_get_cdtext() which returns a pointer to the \p cdtext_t object
-  that is attached to the inquired \p CdIo_t object. This \p cdtext_t
+  cdio_get_cdtext() which returns a pointer to the `cdtext_t` object
+  that is attached to the inquired `CdIo_t `object. This `cdtext_t`
   object gets created and filled if none is yet attached to the
-  inquired \p CdIo_t object.
+  inquired `CdIo_t` object.
 
   @param p_cdtext the CD-TEXT object
   @param wdata the data
@@ -287,7 +288,7 @@ cdtext_t *cdtext_init (void);
 int cdtext_data_init(cdtext_t *p_cdtext, uint8_t *wdata, size_t i_data);
 
 /**
-  Free memory associated with the given \p cdtext_t object.
+  Free memory associated with the given @p cdtext_t object.
 
   @param p_cdtext the CD-TEXT object
 */
@@ -382,14 +383,14 @@ cdtext_lang_t *cdtext_list_languages (const cdtext_t *p_cdtext);
   @param p_cdtext the CD-TEXT object
   @return NULL if p_cdtext is NULL, or an array of 8 cdtext_lang_t elements.
 
-  If an enumeration is CDTEXT_LANGUAGE_INVALID, then the language block has an invalid
+  If an enumeration is #CDTEXT_LANGUAGE_INVALID, then the language block has an invalid
   language code.
 
-  If an enumeration is CDTEXT_LANGUAGE_BLOCK_UNUSED, then the block does not
+  If an enumeration is #CDTEXT_LANGUAGE_BLOCK_UNUSED, then the block does not
   exist on CD or could not be read in CD-TEXT for some reason.
 
   Otherwise, the enumeration of element will be a value in
-  CDTEXT_LANGUAGE_UNKNOWN to CDTEXT_LANGUAGE_AMHARIC, and is a block
+  #CDTEXT_LANGUAGE_UNKNOWN to #CDTEXT_LANGUAGE_AMHARIC, and is a block
   in that language.
 */
 cdtext_lang_t *cdtext_list_languages_v2(cdtext_t *p_cdtext);
@@ -402,7 +403,7 @@ cdtext_lang_t *cdtext_list_languages_v2(cdtext_t *p_cdtext);
   @param p_cdtext the CD-TEXT object
   @param idx      the desired index: 0 to 7.
 
-  @return true on success, false if no language block is associated to \p idx.
+  @return true on success, false if no language block is associated to @p idx.
 */
 bool
 cdtext_set_language_index(cdtext_t *p_cdtext, int idx);
@@ -410,7 +411,7 @@ cdtext_set_language_index(cdtext_t *p_cdtext, int idx);
 /**
   Sets the given field at the given track to the given value.
 
-  Recodes to UTF-8 if charset is not \p NULL.
+  Recodes to UTF-8 if charset is not @p NULL.
 
   @param p_cdtext the CD-TEXT object
   @param key field to set
@@ -425,7 +426,7 @@ void cdtext_set (cdtext_t *p_cdtext, cdtext_field_t key, const uint8_t *value, t
 #endif /* __cplusplus */
 
 #endif /* CDIO_CDTEXT_H_ */
-
+
 /*
  * Local variables:
  *  c-file-style: "gnu"

@@ -4,6 +4,10 @@ Welcome to the API documentation for **libcdio**, the GNU Compact Disc Input and
 
 `libcdio` provides a portable, high-level C interface for CD-ROM, CD-DA (Audio CD), Video CD (VCD), and ISO-9660 image access. It abstracts platform-specific OS calls and hardware-level SCSI/MMC commands, allowing applications to inspect disc layouts, extract audio tracks, read ISO filesystem directory trees, and parse CD-TEXT metadata seamlessly across different operating systems.
 
+The specification of SCSI/MMC implemented is the MMC-6 draft 2g from 11 December 2009. It is described in [Working Draft ICITS XXX T10/1836D](https://www.13thmonkey.org/documentation/SCSI/mmc6r02g.pdf).  
+
+That draft mentions SCSI Primary Commands, SPC-3. For a draft of SPC-3 that we use, see [dpANS Project T10/1416D](https://www.13thmonkey.org/documentation/SCSI/spc3r23.pdf)
+
 ---
 
 ## Key Modules & Core API Components

@@ -63,8 +63,8 @@ extern "C" {
    /**
       Structure of a SCSI/MMC sense reply.
 
-      This has been adapted from GNU/Linux request_sense of <linux/cdrom.h>
-      include this for direct MMC access.
+      This has been adapted from GNU/Linux request_sense of <linux/cdrom.h>.
+      Include this for direct MMC access.
       See SCSI Primary Commands-2 (SPC-3) table 26, page 38.
     */
     typedef struct cdio_mmc_request_sense {
@@ -156,7 +156,7 @@ extern "C" {
                                                    removal. (6 bytes). */
 
   /**
-      Group 2 Commands (CDB's here are 10-bytes)
+      Group 2 Commands (CDB's here it is 10 bytes)
   */
   CDIO_MMC_GPCMD_READ_FORMAT_CAPACITIES = 0x23, /**< MMC-6 Section 6.23 READ FORMAT CAPABILITIES Command */
   CDIO_MMC_GPCMD_READ_CAPACITIY         = 0x25, /**< MMC-6 2g Section 6.18 READ CAPACITY Command */
@@ -246,7 +246,7 @@ extern "C" {
   CDIO_MMC_GPCMD_SET_STREAMING          = 0xb6,
   CDIO_MMC_GPCMD_READ_MSF               = 0xb9, /**< Read almost any field
                                                    of a CD sector at specified
-                                                   MSF. (12 bytes). */
+                                                   MSF (12 bytes). */
   CDIO_MMC_GPCMD_SET_SPEED              = 0xbb, /**< Set drive speed
                                                    (12 bytes). This is listed
                                                    as optional in ATAPI 2.6,
@@ -600,7 +600,7 @@ driver_return_code_t mmc_audio_get_volume (CdIo_t *p_cdio,  /*out*/
     Get the lsn of the end of the CD
 
     @param p_cdio the CD object to be acted upon.
-    @return the lsn. On error return CDIO_INVALID_LSN.
+    @return the lsn. On error, return CDIO_INVALID_LSN.
   */
   lsn_t mmc_get_disc_last_lsn( const CdIo_t *p_cdio );
 
@@ -637,13 +637,13 @@ driver_return_code_t mmc_audio_get_volume (CdIo_t *p_cdio,  /*out*/
 
     @param p_cdio the CD object to be acted upon.
     @param s location to store DVD information.
-    @return the DVD discmode.
+    @return the DVD disc mode.
   */
   discmode_t mmc_get_dvd_struct_physical ( const CdIo_t *p_cdio,
                                            cdio_dvd_struct_t *s);
 
   /**
-    Find out if media tray is open or closed.
+    Find out if the media tray is open or closed.
     @param p_cdio the CD object to be acted upon.
     @return 1 if media is open, 0 if closed. Error
     return codes are the same as \p driver_return_code_t.
@@ -751,7 +751,7 @@ driver_return_code_t mmc_audio_get_volume (CdIo_t *p_cdio,  /*out*/
       @param p_buf place to read data into.  The caller should make
              sure this location can store at least \p CDIO_CD_FRAMESIZE,
              \p M2RAW_SECTOR_SIZE, or \p M2F2_SECTOR_SIZE depending on the
-             kind of sector getting read. If you don't know whether
+             kind of sector being read. If you don't know whether
              you have a Mode 1/2, Form 1/ Form 2/Formless sector best
              to reserve space for the maximum, \p M2RAW_SECTOR_SIZE.
 
@@ -786,7 +786,7 @@ driver_return_code_t mmc_audio_get_volume (CdIo_t *p_cdio,  /*out*/
     @param i_buf         Size of buffer
     @param p_buf         Buffer for data, both sending and receiving.
 
-    @return 0 if command completed successfully.
+    @return 0 if the command completed successfully.
   */
   driver_return_code_t
   mmc_run_cmd( const CdIo_t *p_cdio, unsigned int i_timeout_ms,
@@ -796,7 +796,7 @@ driver_return_code_t mmc_audio_get_volume (CdIo_t *p_cdio,  /*out*/
 
   /**
     Run a Multimedia command (MMC) specifying the CDB length.
-    The motivation here is for example of use in is an undocumented
+    The motivation here, for example, is its use in an undocumented
     debug command for LG drives (namely E7), whose length is being
     miscalculated by mmc_get_cmd_len(); it doesn't follow the usual
     code number to length conventions. Patch supplied by SukkoPera.
@@ -828,7 +828,7 @@ driver_return_code_t mmc_audio_get_volume (CdIo_t *p_cdio,  /*out*/
 
       @param pp_sense returns the sense bytes received from the drive.
       This is allocated memory or NULL if no sense bytes are
-      available. Dispose non-NULL pointers by cdio_free() when no longer
+      available. Dispose of non-NULL pointers by cdio_free() when no longer
       needed.  See SPC-3 4.5.3 Fixed format sense data.  SCSI error
       codes as of SPC-3 Annex D, MMC-5 Annex F: sense[2]&15 = Key ,
       sense[12] = \p ASC , sense[13] = \p ASCQ
@@ -840,7 +840,7 @@ driver_return_code_t mmc_audio_get_volume (CdIo_t *p_cdio,  /*out*/
                            cdio_mmc_request_sense_t **pp_sense);
 
   /**
-    Set the block size for subsequent read requests, via MMC.
+    Set the block size for subsequent read requests via MMC.
   */
   driver_return_code_t mmc_set_blocksize ( const CdIo_t *p_cdio,
                                            uint16_t i_blocksize);
@@ -861,7 +861,7 @@ driver_return_code_t mmc_audio_get_volume (CdIo_t *p_cdio,  /*out*/
 #endif /* __cplusplus */
 
 /**
-    The below variables are trickery to force the above enum symbol
+    The following variables are trickery to force the above enum symbol
     values to be recorded in debug symbol tables. They are used to
     allow one to refer to the enumeration value names in the typedefs
     above in a debugger and debugger expressions

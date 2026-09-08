@@ -67,7 +67,7 @@ typedef enum {
   CDTEXT_GENRE_UNDEFINED = 1,      /**< not defined */
   CDTEXT_GENRE_ADULT_CONTEMP = 2,  /**< Adult Contemporary */
   CDTEXT_GENRE_ALT_ROCK = 3,       /**< Alternative Rock */
-  CDTEXT_GENRE_CHILDRENS = 4,      /**< Childrens Music */
+  CDTEXT_GENRE_CHILDRENS = 4,      /**< Children's Music */
   CDTEXT_GENRE_CLASSIC = 5,        /**< Classical */
   CDTEXT_GENRE_CHRIST_CONTEMP = 6, /**< Contemporary Christian */
   CDTEXT_GENRE_COUNTRY = 7,        /**< Country */

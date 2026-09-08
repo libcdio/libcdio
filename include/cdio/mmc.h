@@ -77,7 +77,7 @@ extern "C" {
 #endif
         uint8_t segment_number;
 #if defined(__MMC_BIG_ENDIAN_BITFIELD)
-        uint8_t filemark        : 1; /**< manditory in sequential
+        uint8_t filemark        : 1; /**< mandatory in sequential
                                       * access devices */
         uint8_t eom             : 1; /**< end of medium. mandatory in
                                       * sequential access and
@@ -92,7 +92,7 @@ extern "C" {
         uint8_t eom             : 1; /**< end of medium. mandatory in
                                       * sequential access and
                                       * printer devices */
-        uint8_t filemark        : 1; /**< manditory in sequential
+        uint8_t filemark        : 1; /**< mandatory in sequential
                                       * access devices */
 #endif
         uint8_t information[4];
@@ -883,7 +883,7 @@ extern cdio_mmc_mode_page_t         debug_cdio_mmc_mode_page;
 #endif /*DO_NOT_WANT_PARANOIA_COMPATIBILITY*/
 
 #endif /* CDIO_MMC_H_ */
-
+
 /*
  * Local variables:
  *  c-file-style: "ruby"
